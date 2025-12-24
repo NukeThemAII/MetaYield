@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { OnchainStrategies } from "@/components/onchain-strategies";
 import { fetchAllocations } from "@/lib/indexer";
 import { formatUsd, shortenAddress } from "@/lib/format";
 
@@ -33,11 +34,14 @@ export default async function StrategiesPage() {
         </CardContent>
       </Card>
 
+      <OnchainStrategies />
+
       <Card className="animate-rise">
         <CardHeader>
-          <CardTitle className="text-sm text-muted">Current strategies</CardTitle>
+          <CardTitle className="text-sm text-muted">Indexer snapshot</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted">Hourly snapshot from the indexer service.</p>
           <div className="space-y-3">
             {allocations?.allocations.length ? (
               allocations.allocations.map((strategy) => (

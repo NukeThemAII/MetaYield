@@ -11,7 +11,6 @@
 - Persist indexer health metrics (lag, last block, error count).
 
 ## Frontend
-- Wire onchain strategy list + caps directly from vault (SDK reads).
 - Add role-gated execute timelock actions and queue management UX.
 - Add chart components for share price history and allocation breakdown.
 

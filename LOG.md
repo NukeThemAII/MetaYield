@@ -51,6 +51,8 @@
 - Wired indexer API reads for TVL/APY/allocations on server-rendered pages.
 - Built basic deposit/withdraw panel with approve/deposit/withdraw txs.
 - Added onchain read panels for live vault state + user position.
+- Added onchain strategies panel on `/strategies` using vault `getStrategies` + config reads.
+- Added onchain strategy metadata (name/symbol) and live deposit/withdraw queue ordering.
 - Added price history endpoint and sparkline fed by indexer snapshots.
 
 ### DevOps

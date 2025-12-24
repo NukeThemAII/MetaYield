@@ -18,7 +18,7 @@ Repository: https://github.com/NukeThemAII/MetaYield
 - viem SDK for reads + tx data encoding.
 - Indexer/API for TVL, APY (7d/30d), and allocations.
 - Next.js UI scaffold with dashboard/vault/strategies/admin pages and wagmi integration.
-- Onchain live reads in UI for vault state + user position.
+- Onchain live reads in UI for vault state, user position, and strategy metadata + queues.
 
 ## Planning & Tests
 - `TODO.md` tracks the near-term implementation plan.
