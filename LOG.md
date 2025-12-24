@@ -59,6 +59,7 @@
 
 ### Strategy Universe
 - Populated `docs/STRATEGY_UNIVERSE.md` with Base USDC MetaMorpho vault addresses and initial caps/tiers proposal.
+- Added deep-dive sections for top MetaMorpho USDC vaults (Steakhouse, Spark, Gauntlet) with addresses and notes.
 
 ### Planning & Tests
 - Added `TODO.md` for near-term tasks.

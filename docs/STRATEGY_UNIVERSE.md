@@ -131,10 +131,271 @@ Suggested queue placement (deposit/withdraw priority):
 
 Any circuit breakers (max daily share price change, etc.):
 
+3.1 Strategy: Steakhouse USDC (steakUSDC)
+
+Protocol / Product
+
+Protocol: Morpho Blue (MetaMorpho)
+
+Product type (lending vault, Aave wrapper, Morpho vault, etc.): MetaMorpho ERC-4626 vault
+
+Chain: Base
+
+Addresses
+
+USDC address: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+
+Strategy vault address: 0xbeeF010f9cb27031ad51e3333f9aF9C6B1228183
+
+Any relevant market/pool address: N/A (MetaMorpho vault)
+
+Verified source links:
+- Morpho Blue GraphQL: https://blue-api.morpho.org/graphql (query by chainId=8453 + USDC asset)
+- BaseScan: https://basescan.org/address/0xbeeF010f9cb27031ad51e3333f9aF9C6B1228183
+
+ERC-4626 compatibility checklist
+
+Expected ERC-4626 (MetaMorpho vault). Verify onchain before allowlisting:
+- asset(), totalAssets(), deposit(), withdraw(), redeem(), mint()
+- convertToAssets/convertToShares monotonic
+- previewDeposit/previewWithdraw/previewRedeem sensible
+- Decimals: asset decimals (USDC=6); share decimals: verify
+
+Liquidity / withdrawal behavior
+
+Withdraw latency (instant / limited / queued): Expected instant (liquidity-dependent)
+
+Any gates, pauses, cooldowns: Verify vault config
+
+Historical utilization spikes: TBD
+
+Practical max withdraw per tx / per block: TBD
+
+Risk analysis
+
+Primary risk drivers (bad debt, admin risk, oracle risk, integration risk):
+- Underlying Morpho markets risk and curator allocation risk
+- Smart contract risk (MetaMorpho vault)
+- Admin/guardian controls
+
+Who controls parameters: Curator/guardian roles (verify onchain)
+
+Is there an emergency pause: Expected (verify)
+
+Known incidents / post-mortems: TBD
+
+Security
+
+Audits (firm, date, scope): TBD (review Morpho Blue + MetaMorpho audits)
+
+Bug bounty: TBD
+
+Code maturity: High (MetaMorpho vault)
+
+Performance
+
+APY sources (organic vs incentives): Lending yield
+
+Trailing 7d/30d APY range: netApy ~4.24% (Morpho Blue state netApy, 2025-12-24)
+
+Variance / volatility notes: TBD
+
+Integration notes
+
+Needs adapter? (Y/N): No
+
+Any approvals required: USDC approval to vault
+
+Any special handling (reentrancy, rounding): Standard ERC-4626 precautions
+
+Suggested policy
+
+Risk tier (0/1/2): 1
+
+Suggested cap (assets): 25% TVL
+
+Suggested queue placement (deposit/withdraw priority): High priority
+
+Any circuit breakers (max daily share price change, etc.): Optional 1-2% daily share price deviation guard (offchain)
+
+3.2 Strategy: Spark USDC Vault (sparkUSDC)
+
+Protocol / Product
+
+Protocol: Morpho Blue (MetaMorpho)
+
+Product type (lending vault, Aave wrapper, Morpho vault, etc.): MetaMorpho ERC-4626 vault
+
+Chain: Base
+
+Addresses
+
+USDC address: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+
+Strategy vault address: 0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A
+
+Any relevant market/pool address: N/A (MetaMorpho vault)
+
+Verified source links:
+- Morpho Blue GraphQL: https://blue-api.morpho.org/graphql
+- BaseScan: https://basescan.org/address/0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A
+
+ERC-4626 compatibility checklist
+
+Expected ERC-4626 (MetaMorpho vault). Verify onchain before allowlisting:
+- asset(), totalAssets(), deposit(), withdraw(), redeem(), mint()
+- convertToAssets/convertToShares monotonic
+- previewDeposit/previewWithdraw/previewRedeem sensible
+- Decimals: asset decimals (USDC=6); share decimals: verify
+
+Liquidity / withdrawal behavior
+
+Withdraw latency (instant / limited / queued): Expected instant (liquidity-dependent)
+
+Any gates, pauses, cooldowns: Verify vault config
+
+Historical utilization spikes: TBD
+
+Practical max withdraw per tx / per block: TBD
+
+Risk analysis
+
+Primary risk drivers (bad debt, admin risk, oracle risk, integration risk):
+- Underlying Morpho markets risk and curator allocation risk
+- Smart contract risk (MetaMorpho vault)
+- Admin/guardian controls
+
+Who controls parameters: Curator/guardian roles (verify onchain)
+
+Is there an emergency pause: Expected (verify)
+
+Known incidents / post-mortems: TBD
+
+Security
+
+Audits (firm, date, scope): TBD
+
+Bug bounty: TBD
+
+Code maturity: High (MetaMorpho vault)
+
+Performance
+
+APY sources (organic vs incentives): Lending yield
+
+Trailing 7d/30d APY range: netApy ~4.85% (Morpho Blue state netApy, 2025-12-24)
+
+Variance / volatility notes: TBD
+
+Integration notes
+
+Needs adapter? (Y/N): No
+
+Any approvals required: USDC approval to vault
+
+Any special handling (reentrancy, rounding): Standard ERC-4626 precautions
+
+Suggested policy
+
+Risk tier (0/1/2): 1
+
+Suggested cap (assets): 20% TVL
+
+Suggested queue placement (deposit/withdraw priority): Medium priority
+
+Any circuit breakers (max daily share price change, etc.): Optional 1-2% daily share price deviation guard (offchain)
+
+3.3 Strategy: Gauntlet USDC Prime (gtUSDCp)
+
+Protocol / Product
+
+Protocol: Morpho Blue (MetaMorpho)
+
+Product type (lending vault, Aave wrapper, Morpho vault, etc.): MetaMorpho ERC-4626 vault
+
+Chain: Base
+
+Addresses
+
+USDC address: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+
+Strategy vault address: 0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61
+
+Any relevant market/pool address: N/A (MetaMorpho vault)
+
+Verified source links:
+- Morpho Blue GraphQL: https://blue-api.morpho.org/graphql
+- BaseScan: https://basescan.org/address/0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61
+
+ERC-4626 compatibility checklist
+
+Expected ERC-4626 (MetaMorpho vault). Verify onchain before allowlisting:
+- asset(), totalAssets(), deposit(), withdraw(), redeem(), mint()
+- convertToAssets/convertToShares monotonic
+- previewDeposit/previewWithdraw/previewRedeem sensible
+- Decimals: asset decimals (USDC=6); share decimals: verify
+
+Liquidity / withdrawal behavior
+
+Withdraw latency (instant / limited / queued): Expected instant (liquidity-dependent)
+
+Any gates, pauses, cooldowns: Verify vault config
+
+Historical utilization spikes: TBD
+
+Practical max withdraw per tx / per block: TBD
+
+Risk analysis
+
+Primary risk drivers (bad debt, admin risk, oracle risk, integration risk):
+- Underlying Morpho markets risk and curator allocation risk
+- Smart contract risk (MetaMorpho vault)
+- Admin/guardian controls
+
+Who controls parameters: Curator/guardian roles (verify onchain)
+
+Is there an emergency pause: Expected (verify)
+
+Known incidents / post-mortems: TBD
+
+Security
+
+Audits (firm, date, scope): TBD
+
+Bug bounty: TBD
+
+Code maturity: High (MetaMorpho vault)
+
+Performance
+
+APY sources (organic vs incentives): Lending yield
+
+Trailing 7d/30d APY range: netApy ~5.61% (Morpho Blue state netApy, 2025-12-24)
+
+Variance / volatility notes: TBD
+
+Integration notes
+
+Needs adapter? (Y/N): No
+
+Any approvals required: USDC approval to vault
+
+Any special handling (reentrancy, rounding): Standard ERC-4626 precautions
+
+Suggested policy
+
+Risk tier (0/1/2): 1
+
+Suggested cap (assets): 25% TVL
+
+Suggested queue placement (deposit/withdraw priority): High priority
+
+Any circuit breakers (max daily share price change, etc.): Optional 1-2% daily share price deviation guard (offchain)
+
 4) v0.1 recommended allowlist
 
 Tier 0:
-- (none for v0.1; USDC blue‑chip ERC‑4626 on Base not confirmed)
+- (none for v0.1; USDC blue-chip ERC-4626 on Base not confirmed)
 
 Tier 1 (preferred start):
 - Gauntlet USDC Prime (gtUSDCp) — 0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61
