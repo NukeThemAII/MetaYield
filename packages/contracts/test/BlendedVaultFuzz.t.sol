@@ -46,6 +46,7 @@ contract BlendedVaultFuzzTest is BlendedVaultBaseTest {
             tierMaxBps,
             0,
             10 * USDC,
+            0,
             30 minutes,
             1 days
         );
@@ -74,6 +75,7 @@ contract BlendedVaultFuzzTest is BlendedVaultBaseTest {
             tierMaxBps,
             0,
             10 * USDC,
+            0,
             30 minutes,
             1 days
         );

@@ -25,6 +25,7 @@ export async function getVaultState(
     idleLiquidityBps,
     minInitialDeposit,
     minHarvestInterval,
+    maxDailyIncreaseBps,
     decimals,
   ] = await client.multicall({
     allowFailure: false,
@@ -44,6 +45,7 @@ export async function getVaultState(
       { address: vault, abi: blendedVaultAbi, functionName: "idleLiquidityBps" },
       { address: vault, abi: blendedVaultAbi, functionName: "minInitialDeposit" },
       { address: vault, abi: blendedVaultAbi, functionName: "minHarvestInterval" },
+      { address: vault, abi: blendedVaultAbi, functionName: "maxDailyIncreaseBps" },
       { address: vault, abi: blendedVaultAbi, functionName: "decimals" },
     ],
   });
@@ -70,6 +72,7 @@ export async function getVaultState(
     idleLiquidityBps: Number(idleLiquidityBps),
     minInitialDeposit,
     minHarvestInterval,
+    maxDailyIncreaseBps: Number(maxDailyIncreaseBps),
     tierMaxBps: [
       Number(tierResults[0]),
       Number(tierResults[1]),

@@ -14,6 +14,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
 
     error AlreadyScheduled();
     error DepositsPaused();
+    error HarvestIncreaseTooHigh();
     error HarvestTooSoon();
     error InvalidAsset();
     error InvalidBps();
@@ -48,6 +49,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
 
     bytes32 private constant ACTION_ADD_STRATEGY = keccak256("ADD_STRATEGY");
     bytes32 private constant ACTION_CAP_INCREASE = keccak256("CAP_INCREASE");
+    bytes32 private constant ACTION_MAX_DAILY_INCREASE = keccak256("MAX_DAILY_INCREASE");
     bytes32 private constant ACTION_TIER_LIMITS = keccak256("TIER_LIMITS");
 
     struct StrategyConfig {
@@ -72,6 +74,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
     uint256 public lastHarvestBlock;
     uint256 public lastHarvestTimestamp;
     uint256 public minHarvestInterval;
+    uint256 public maxDailyIncreaseBps;
 
     bool public pausedDeposits;
     bool public pausedWithdrawals;
@@ -99,6 +102,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
     event IdleLiquidityBpsUpdated(uint256 oldBps, uint256 newBps);
     event MinInitialDepositUpdated(uint256 oldMin, uint256 newMin);
     event MinHarvestIntervalUpdated(uint256 oldInterval, uint256 newInterval);
+    event MaxDailyIncreaseBpsUpdated(uint256 oldBps, uint256 newBps);
     event TimelockDelayUpdated(uint256 oldDelay, uint256 newDelay);
 
     constructor(
@@ -113,6 +117,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         uint256[3] memory tierMaxBps_,
         uint256 idleLiquidityBps_,
         uint256 minInitialDeposit_,
+        uint256 maxDailyIncreaseBps_,
         uint256 minHarvestInterval_,
         uint256 timelockDelay_
     ) ERC4626(asset_) ERC20(name_, symbol_) {
@@ -132,6 +137,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
 
         feeRecipient = feeRecipient_;
         minInitialDeposit = minInitialDeposit_;
+        _setMaxDailyIncreaseBps(maxDailyIncreaseBps_);
         minHarvestInterval = minHarvestInterval_;
         timelockDelay = timelockDelay_;
         highWatermarkAssetsPerShare = 1e18;
@@ -343,6 +349,29 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         emit MinHarvestIntervalUpdated(oldInterval, newInterval);
     }
 
+    function setMaxDailyIncreaseBps(uint256 newBps) external onlyCuratorOrOwner {
+        uint256 oldBps = maxDailyIncreaseBps;
+        if (newBps > oldBps) {
+            revert TimelockRequired();
+        }
+        _setMaxDailyIncreaseBps(newBps);
+    }
+
+    function scheduleMaxDailyIncreaseBps(uint256 newBps, bytes32 salt)
+        external
+        onlyCuratorOrOwner
+        returns (bytes32 id)
+    {
+        bytes memory data = abi.encode(newBps);
+        id = _scheduleChange(ACTION_MAX_DAILY_INCREASE, data, salt);
+    }
+
+    function executeMaxDailyIncreaseBps(uint256 newBps, bytes32 salt) external onlyCuratorOrOwner {
+        bytes memory data = abi.encode(newBps);
+        _consumeChange(ACTION_MAX_DAILY_INCREASE, data, salt);
+        _setMaxDailyIncreaseBps(newBps);
+    }
+
     function setTimelockDelay(uint256 newDelay) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (newDelay < MIN_TIMELOCK_DELAY) {
             revert InvalidTimelockDelay();
@@ -383,6 +412,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         config.enabled = false;
         _removeFromQueue(depositQueue, strategy);
         emit StrategyRemoved(strategy);
+        emit QueuesUpdated(keccak256(abi.encode(depositQueue)), keccak256(abi.encode(withdrawQueue)));
     }
 
     function forceRemoveStrategy(address strategy) external onlyGuardianOrOwner {
@@ -393,6 +423,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         config.enabled = false;
         _removeFromQueue(depositQueue, strategy);
         emit StrategyRemoved(strategy);
+        emit QueuesUpdated(keccak256(abi.encode(depositQueue)), keccak256(abi.encode(withdrawQueue)));
     }
 
     function setCap(address strategy, uint256 newCap) external onlyCuratorOrOwner {
@@ -538,6 +569,16 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
             lastHarvestBlock = block.number;
             lastHarvestTimestamp = block.timestamp;
             return;
+        }
+
+        if (maxDailyIncreaseBps != 0 && lastHarvestTimestamp != 0) {
+            uint256 elapsed = block.timestamp - lastHarvestTimestamp;
+            uint256 maxIncrease =
+                (highWatermarkAssetsPerShare * maxDailyIncreaseBps * elapsed) /
+                (MAX_BPS * 1 days);
+            if (currentAssetsPerShare > highWatermarkAssetsPerShare + maxIncrease) {
+                revert HarvestIncreaseTooHigh();
+            }
         }
 
         uint256 profitAssets =
@@ -744,6 +785,15 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         uint256 oldBps = idleLiquidityBps;
         idleLiquidityBps = newBps;
         emit IdleLiquidityBpsUpdated(oldBps, newBps);
+    }
+
+    function _setMaxDailyIncreaseBps(uint256 newBps) internal {
+        if (newBps > MAX_BPS) {
+            revert InvalidBps();
+        }
+        uint256 oldBps = maxDailyIncreaseBps;
+        maxDailyIncreaseBps = newBps;
+        emit MaxDailyIncreaseBpsUpdated(oldBps, newBps);
     }
 
     function _scheduleChange(bytes32 action, bytes memory data, bytes32 salt)

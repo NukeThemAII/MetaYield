@@ -47,6 +47,7 @@ abstract contract BlendedVaultBaseTest is Test {
             tierMaxBps,
             0,
             1 * USDC,
+            0,
             30 minutes,
             1 days
         );

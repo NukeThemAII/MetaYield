@@ -22,6 +22,7 @@ Operational guide for the USDC Blended Vault (MetaYield) covering deployment, co
   - `TIER2_MAX_BPS`
   - `IDLE_LIQUIDITY_BPS`
   - `MIN_INITIAL_DEPOSIT`
+  - `MAX_DAILY_INCREASE_BPS`
   - `MIN_HARVEST_INTERVAL`
   - `TIMELOCK_DELAY`
 

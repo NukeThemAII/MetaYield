@@ -108,6 +108,15 @@ export const blendedVaultAbi = [
   },
   {
     type: "event",
+    name: "MaxDailyIncreaseBpsUpdated",
+    inputs: [
+      { name: "oldBps", type: "uint256", indexed: false },
+      { name: "newBps", type: "uint256", indexed: false },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "QueuesUpdated",
     inputs: [
       { name: "depositQueueHash", type: "bytes32", indexed: false },

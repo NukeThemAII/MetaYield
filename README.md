@@ -76,6 +76,7 @@ PORT=3001
 - Caps + tier exposure limits (Tier 0/1/2).
 - Deposit/withdraw queues for allocation and liquidity routing.
 - Performance fee: 3% of profits above high‑water mark, minted as shares.
+- Harvest guard: optional max daily share‑price increase cap (anti‑manipulation).
 - Timelock for risk‑increasing changes (>=24h).
 - Guardian pause controls and emergency strategy removal.
 

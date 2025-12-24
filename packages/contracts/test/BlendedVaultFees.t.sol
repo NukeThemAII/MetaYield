@@ -18,6 +18,7 @@ contract BlendedVaultFeesTest is BlendedVaultBaseTest {
         uint256 feeAssets = (profitAssets * 300) / 10_000;
         uint256 expectedFeeShares = (feeAssets * supply) / (total - feeAssets);
         uint256 feeBalanceBefore = vault.balanceOf(feeRecipient);
+        uint256 feeBalanceBefore = vault.balanceOf(feeRecipient);
 
         vm.prank(allocator);
         vault.harvest();
@@ -75,6 +76,30 @@ contract BlendedVaultFeesTest is BlendedVaultBaseTest {
         vault.harvest();
 
         assertEq(vault.balanceOf(feeRecipient), feeBalanceBefore + expectedFeeShares);
+    }
+
+    function testHarvestRevertsOnExcessiveDailyIncrease() public {
+        _deposit(user, 1_000 * USDC);
+
+        vm.prank(allocator);
+        vault.harvest();
+
+        bytes32 salt = keccak256("MAX_DAILY_INCREASE");
+        vm.prank(curator);
+        vault.scheduleMaxDailyIncreaseBps(100, salt);
+
+        vm.warp(block.timestamp + 1 days);
+        vm.prank(curator);
+        vault.executeMaxDailyIncreaseBps(100, salt);
+
+        vm.warp(block.timestamp + 1 hours);
+        vm.roll(block.number + 1);
+
+        stratA.simulateYield(100 * USDC);
+
+        vm.prank(allocator);
+        vm.expectRevert(BlendedVault.HarvestIncreaseTooHigh.selector);
+        vault.harvest();
     }
 
     function testHarvestNoFeeOnLoss() public {

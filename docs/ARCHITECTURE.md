@@ -104,6 +104,8 @@ feeBps (300)
 
 highWatermarkAssetsPerShare (1e18 scaled)
 
+maxDailyIncreaseBps (harvest guard, optional)
+
 pausedDeposits, pausedWithdrawals
 
 3.2 Strategy registry
@@ -250,6 +252,8 @@ nonReentrant
 prevent same-block double-harvest
 
 optional min interval
+
+max daily assets-per-share increase guard (configurable, can be disabled)
 
 4.5 Governance change flow (timelocked)
 

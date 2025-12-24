@@ -24,6 +24,7 @@ contract DeployBaseMainnet is Script {
         ];
         uint256 idleLiquidityBps = vm.envOr("IDLE_LIQUIDITY_BPS", uint256(200));
         uint256 minInitialDeposit = vm.envOr("MIN_INITIAL_DEPOSIT", uint256(1_000_000));
+        uint256 maxDailyIncreaseBps = vm.envOr("MAX_DAILY_INCREASE_BPS", uint256(200));
         uint256 minHarvestInterval = vm.envOr("MIN_HARVEST_INTERVAL", uint256(1 hours));
         uint256 timelockDelay = vm.envOr("TIMELOCK_DELAY", uint256(1 days));
 
@@ -40,6 +41,7 @@ contract DeployBaseMainnet is Script {
             tierMaxBps,
             idleLiquidityBps,
             minInitialDeposit,
+            maxDailyIncreaseBps,
             minHarvestInterval,
             timelockDelay
         );

@@ -163,6 +163,8 @@ Consider using previewRedeem/previewWithdraw for conservative valuation where ap
 
 Add “strategy health checks” (offchain + onchain guardrails): max daily share price change threshold for harvest.
 
+Onchain guard: `maxDailyIncreaseBps` limits assetsPerShare increases per day (scaled by elapsed time since last harvest).
+
 T5: Insolvency / bad debt in a lending strategy
 
 Threat: underlying lending market suffers losses; our vault’s assets decline.

@@ -73,4 +73,20 @@ contract BlendedVaultTimelockTest is BlendedVaultBaseTest {
 
         assertEq(vault.tierMaxBps(0), 9_000);
     }
+
+    function testMaxDailyIncreaseRequiresTimelock() public {
+        vm.prank(curator);
+        vm.expectRevert(BlendedVault.TimelockRequired.selector);
+        vault.setMaxDailyIncreaseBps(100);
+
+        bytes32 salt = keccak256("MAX_DAILY_INC");
+        vm.prank(curator);
+        vault.scheduleMaxDailyIncreaseBps(100, salt);
+
+        vm.warp(block.timestamp + 1 days);
+        vm.prank(curator);
+        vault.executeMaxDailyIncreaseBps(100, salt);
+
+        assertEq(vault.maxDailyIncreaseBps(), 100);
+    }
 }

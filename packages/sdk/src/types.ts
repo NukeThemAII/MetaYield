@@ -12,6 +12,7 @@ export type VaultState = {
   idleLiquidityBps: number;
   minInitialDeposit: bigint;
   minHarvestInterval: bigint;
+  maxDailyIncreaseBps: number;
   tierMaxBps: [number, number, number];
   decimals: number;
 };

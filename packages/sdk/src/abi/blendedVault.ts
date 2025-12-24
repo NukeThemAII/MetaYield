@@ -92,6 +92,13 @@ export const blendedVaultAbi = [
   },
   {
     type: "function",
+    name: "maxDailyIncreaseBps",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    type: "function",
     name: "tierMaxBps",
     stateMutability: "view",
     inputs: [{ name: "index", type: "uint256" }],
@@ -297,6 +304,33 @@ export const blendedVaultAbi = [
     inputs: [
       { name: "strategy", type: "address" },
       { name: "newCap", type: "uint256" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "setMaxDailyIncreaseBps",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "newBps", type: "uint256" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "scheduleMaxDailyIncreaseBps",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "newBps", type: "uint256" },
+      { name: "salt", type: "bytes32" },
+    ],
+    outputs: [{ type: "bytes32" }],
+  },
+  {
+    type: "function",
+    name: "executeMaxDailyIncreaseBps",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "newBps", type: "uint256" },
+      { name: "salt", type: "bytes32" },
     ],
     outputs: [],
   },
@@ -531,6 +565,15 @@ export const blendedVaultAbi = [
     inputs: [
       { name: "oldInterval", type: "uint256", indexed: false },
       { name: "newInterval", type: "uint256", indexed: false },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "MaxDailyIncreaseBpsUpdated",
+    inputs: [
+      { name: "oldBps", type: "uint256", indexed: false },
+      { name: "newBps", type: "uint256", indexed: false },
     ],
     anonymous: false,
   },

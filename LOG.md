@@ -26,7 +26,10 @@
   - Timelock enforcement for risk-increasing changes.
   - Harvest fee correctness and guardrails (same-block + min interval).
   - Reentrancy guard with malicious strategy mock.
-  - Fuzz checks for monotonic conversions and no first-deposit share inflation.
+- Fuzz checks for monotonic conversions and no first-deposit share inflation.
+- Added max daily share-price increase guard in harvest (`maxDailyIncreaseBps`) with timelocked increases.
+- Emitted `QueuesUpdated` when strategies are removed from the deposit queue.
+- Fixed fee accrual test bug and added coverage for the harvest guard.
 
 ### SDK (TypeScript)
 - Implemented `packages/sdk` with viem helpers:
