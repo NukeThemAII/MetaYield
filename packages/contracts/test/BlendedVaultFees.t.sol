@@ -17,8 +17,6 @@ contract BlendedVaultFeesTest is BlendedVaultBaseTest {
         uint256 profitAssets = (currentAssetsPerShare - vault.highWatermarkAssetsPerShare()) * supply / 1e18;
         uint256 feeAssets = (profitAssets * 300) / 10_000;
         uint256 expectedFeeShares = (feeAssets * supply) / (total - feeAssets);
-        uint256 feeBalanceBefore = vault.balanceOf(feeRecipient);
-        uint256 feeBalanceBefore = vault.balanceOf(feeRecipient);
 
         vm.prank(allocator);
         vault.harvest();
@@ -71,6 +69,7 @@ contract BlendedVaultFeesTest is BlendedVaultBaseTest {
         uint256 profitAssets = (currentAssetsPerShare - vault.highWatermarkAssetsPerShare()) * supply / 1e18;
         uint256 feeAssets = (profitAssets * 300) / 10_000;
         uint256 expectedFeeShares = (feeAssets * supply) / (total - feeAssets);
+        uint256 feeBalanceBefore = vault.balanceOf(feeRecipient);
 
         vm.prank(allocator);
         vault.harvest();
