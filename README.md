@@ -5,12 +5,20 @@
 | |  | |  __/ || (_| |  | |  __/ | |_) | |  __/\__ \
 |_|  |_|\___|\__\__,_|  |_|\___|_|_.__/|_|\___||___/
 
- MetaYield · USDC Blended Vault on Base
+ MetaYield
 ```
 
 MetaYield is a USDC “savings” dApp on Base. Users deposit USDC and receive ERC‑4626 vault shares. The vault allocates across a whitelisted set of synchronous ERC‑4626 strategies with caps, queues, and tier exposure limits to target 7–10% net APY (market‑dependent).
 
 Repository: https://github.com/NukeThemAII/MetaYield
+
+## Plain-English Overview
+MetaYield is like a shared USDC savings pool:
+- You put in USDC and get a receipt (your vault shares).
+- The vault spreads funds across vetted yield sources with strict caps and queues.
+- If those sources earn, the value of your receipt rises over time.
+- You can withdraw USDC anytime the underlying strategies have liquidity.
+- The vault keeps a small 3% cut of profits to fund operations.
 
 ## Current State (v0.1)
 - Contracts implemented (ERC‑4626 vault‑of‑vaults, timelock policy, fee logic, roles, pauses).
