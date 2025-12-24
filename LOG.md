@@ -60,6 +60,10 @@
 ### Strategy Universe
 - Populated `docs/STRATEGY_UNIVERSE.md` with Base USDC MetaMorpho vault addresses and initial caps/tiers proposal.
 
+### Planning & Tests
+- Added `TODO.md` for near-term tasks.
+- Added `TESTS.md` with local verification commands.
+
 ## Key design choices
 - v0.1 uses synchronous ERC-4626 strategies only.
 - Strict withdrawals: revert on insufficient liquidity (no partial withdrawals).

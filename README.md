@@ -20,6 +20,10 @@ Repository: https://github.com/NukeThemAII/MetaYield
 - Next.js UI scaffold with dashboard/vault/strategies/admin pages and wagmi integration.
 - Onchain live reads in UI for vault state + user position.
 
+## Planning & Tests
+- `TODO.md` tracks the near-term implementation plan.
+- `TESTS.md` lists local verification commands.
+
 ## Quickstart
 ```bash
 pnpm i
