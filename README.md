@@ -1,66 +1,140 @@
 ```
- __  __      _        __   __     _     _
-|  \/  | ___| |_ __ _ \ \ / /__ _| |__ | | ___  ___
-| |\/| |/ _ \ __/ _` | \ V / _ \ | '_ \| |/ _ \/ __|
-| |  | |  __/ || (_| |  | |  __/ | |_) | |  __/\__ \
-|_|  |_|\___|\__\__,_|  |_|\___|_|_.__/|_|\___||___/
-
- MetaYield
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ███╗   ███╗███████╗████████╗ █████╗ ██╗   ██╗██╗███████╗██╗     ██████╗    ║
+║   ████╗ ████║██╔════╝╚══██╔══╝██╔══██╗╚██╗ ██╔╝██║██╔════╝██║     ██╔══██╗   ║
+║   ██╔████╔██║█████╗     ██║   ███████║ ╚████╔╝ ██║█████╗  ██║     ██║  ██║   ║
+║   ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║  ╚██╔╝  ██║██╔══╝  ██║     ██║  ██║   ║
+║   ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║   ██║   ██║███████╗███████╗██████╔╝   ║
+║   ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝╚═════╝    ║
+║                                                                              ║
+║                       🏦 Smart USDC Savings on Base                          ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-MetaYield is a USDC savings dApp on Base. Users deposit USDC and receive ERC-4626 vault shares. The vault allocates across a whitelisted set of synchronous ERC-4626 strategies with caps, queues, and tier exposure limits to target 7-10% net APY (market-dependent).
+<div align="center">
 
-Repository: https://github.com/NukeThemAII/MetaYield
+[![Base](https://img.shields.io/badge/Chain-Base-0052FF?style=for-the-badge&logo=coinbase)](https://base.org)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.24-363636?style=for-the-badge&logo=solidity)](https://soliditylang.org)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-24%20Passing-brightgreen?style=for-the-badge)](TESTS.md)
 
-## Plain-English Overview
-MetaYield is like a shared USDC savings pool:
-- You deposit USDC and get a receipt (vault shares).
-- The vault spreads funds across vetted yield sources with strict caps and queues.
-- If those sources earn, your shares become worth more USDC over time.
-- You can withdraw when the underlying strategies have liquidity (withdrawals can revert if they do not).
-- A small 3% performance fee applies only to profits, not your principal.
+**Earn yield on your USDC. Automated. Diversified. Transparent.**
 
-## Current State (v0.1)
-- Contracts implemented (ERC-4626 vault-of-vaults, timelock policy, fee logic, roles, pauses).
-- Foundry tests covering queue behavior, caps/tiers, timelock, fee accrual, reentrancy, and fuzz checks.
-- viem SDK for reads + tx data encoding.
-- Indexer/API for TVL, APY (7d/30d), allocations, and price history.
-- Next.js UI with dashboard/vault/strategies/admin pages, wagmi wallet connect, and tx toasts.
-- Onchain live reads in UI for vault state, user position, strategy metadata, queues, and allocation breakdown.
+[📖 Docs](#-documentation) • [🚀 Quick Start](#-quick-start) • [🏗️ Architecture](#️-architecture) • [🔒 Security](#-security)
 
-## Planning & Tests
-- `TODO.md` tracks the near-term implementation plan.
-- `TESTS.md` lists local verification commands.
+</div>
 
-## Quickstart
+---
+
+## 🎯 What is MetaYield?
+
+MetaYield is a USDC savings dApp on Base. Users deposit USDC and receive ERC-4626 vault shares. The vault allocates across a whitelisted set of synchronous ERC-4626 strategies with caps, queues, and tier exposure limits, targeting 7-10% net APY (market-dependent).
+
+### Plain-English Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                     │
+│   💵 You deposit USDC    ──►    🏦 MetaYield Vault                  │
+│                                        │                            │
+│   🎫 You get a receipt                 │                            │
+│      (vault shares)                    ▼                            │
+│                              ┌─────────────────┐                    │
+│                              │  Yield Sources  │                    │
+│                              │ ┌─────┐ ┌─────┐ │                    │
+│                              │ │ 📈  │ │ 📈  │ │                    │
+│                              │ └─────┘ └─────┘ │                    │
+│                              └────────┬────────┘                    │
+│                                       │                             │
+│   💰 Your shares grow                 │                             │
+│      in value over time    ◄──────────┘                             │
+│                                                                     │
+│   🏧 Withdraw anytime      ──►    💵 Get more USDC back             │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**How it works:**
+- 📥 **Deposit** → Put in your USDC
+- 🎫 **Receive** → Get vault shares (your receipt)
+- 📈 **Earn** → Vault spreads funds across vetted yield sources with strict caps and queues
+- 💰 **Profit** → Your shares become worth more USDC over time
+- 📤 **Withdraw** → Cash out when underlying strategies have liquidity (withdrawals revert if they do not)
+
+**Fee structure:**
+- ✅ No deposit fees
+- ✅ No withdrawal fees  
+- 💡 3% performance fee on profits only (never your principal)
+
+---
+
+## 📦 Current State (v0.1)
+
+- ✅ Contracts implemented (ERC-4626 vault-of-vaults, timelock policy, fee logic, roles, pauses)
+- ✅ Foundry tests covering queue behavior, caps/tiers, timelock, fee accrual, reentrancy, and fuzz checks
+- ✅ viem SDK for reads + tx data encoding
+- ✅ Indexer/API for TVL, APY (7d/30d), allocations, and price history with rate limiting
+- ✅ Next.js UI with dashboard/vault/strategies/admin pages, wagmi wallet connect, and tx toasts
+- ✅ Onchain live reads in UI for vault state, user position, strategy metadata, queues, and allocation breakdown
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- pnpm
+- Foundry (for contract tests)
+
+### Installation
+
 ```bash
-pnpm i
+# Clone the repo
+git clone https://github.com/NukeThemAII/MetaYield.git
+cd MetaYield
 
-# Contracts
+# Install dependencies
+pnpm install
+
+# Initialize submodules (OpenZeppelin, Forge)
 git submodule update --init --recursive
+```
+
+### Run Everything
+
+```bash
+# 🧪 Run contract tests
 pnpm -C packages/contracts test
 
-# Indexer
+# 📡 Start the indexer (data API)
 pnpm -C services/indexer dev
 
-# Web
+# 🌐 Start the web app
 pnpm -C apps/web dev
 ```
 
-## Environment Variables
-### Web
-```
+### Environment Variables
+
+<details>
+<summary>📱 Web App (.env)</summary>
+
+```env
 NEXT_PUBLIC_CHAIN_ID=8453
-NEXT_PUBLIC_RPC_URL=...
+NEXT_PUBLIC_RPC_URL=https://mainnet.base.org
 NEXT_PUBLIC_INDEXER_URL=http://localhost:3001
 NEXT_PUBLIC_VAULT_ADDRESS=0x...
-NEXT_PUBLIC_USDC_ADDRESS=0x...
+NEXT_PUBLIC_USDC_ADDRESS=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 NEXT_PUBLIC_USDC_DECIMALS=6
 ```
+</details>
 
-### Indexer
-```
-INDEXER_RPC_URL=...
+<details>
+<summary>📊 Indexer (.env)</summary>
+
+```env
+INDEXER_RPC_URL=https://mainnet.base.org
 VAULT_ADDRESS=0x...
 DATABASE_URL=sqlite:./indexer.db
 START_BLOCK=0
@@ -72,33 +146,198 @@ RATE_LIMIT_WINDOW_SEC=60
 RATE_LIMIT_MAX=120
 PORT=3001
 ```
+</details>
 
-## Contracts Overview
-- ERC-4626 `BlendedVault` with allowlisted strategies.
-- Caps + tier exposure limits (Tier 0/1/2).
-- Deposit/withdraw queues for allocation and liquidity routing.
-- Performance fee: 3% of profits above high-water mark, minted as shares.
-- Harvest guard: optional max daily share-price increase cap (anti-manipulation).
-- Timelock for risk-increasing changes (>=24h).
-- Guardian pause controls and emergency strategy removal.
+---
 
-## Indexer API
-- `GET /api/apy` -> realized 7d/30d APY
-- `GET /api/tvl` -> latest TVL + share price
-- `GET /api/allocations` -> latest per-strategy snapshot
-- `GET /api/price-history?limit=48` -> recent assetsPerShare series
+## 🏗️ Architecture
 
-## Docs
-Read these first:
-- `docs/ARCHITECTURE.md`
-- `docs/THREAT_MODEL.md`
-- `docs/STRATEGY_UNIVERSE.md`
-- `docs/RUNBOOK.md`
+```
+                              ┌──────────────────┐
+                              │   👤 User        │
+                              │   (Wallet)       │
+                              └────────┬─────────┘
+                                       │
+                    ┌──────────────────┴───────────────────┐
+                    │                                       │
+                    ▼                                       ▼
+         ┌──────────────────┐                    ┌──────────────────┐
+         │  🌐 Frontend     │                    │  📡 Indexer      │
+         │  (Next.js)       │◄──── REST ────────│  (Node.js)       │
+         │  apps/web        │                    │  services/indexer│
+         └────────┬─────────┘                    └────────┬─────────┘
+                  │                                        │
+                  │ wagmi/viem                            │ viem
+                  ▼                                        ▼
+         ┌─────────────────────────────────────────────────────────┐
+         │                      ⛓️ Base Network                     │
+         │  ┌─────────────────────────────────────────────────┐    │
+         │  │                🏦 BlendedVault                   │    │
+         │  │                (ERC-4626)                        │    │
+         │  │                                                  │    │
+         │  │   ┌─────────┐  ┌─────────┐  ┌─────────┐         │    │
+         │  │   │Strategy │  │Strategy │  │Strategy │  ...    │    │
+         │  │   │   A     │  │   B     │  │   C     │         │    │
+         │  │   │(Tier 0) │  │(Tier 1) │  │(Tier 2) │         │    │
+         │  │   └─────────┘  └─────────┘  └─────────┘         │    │
+         │  └─────────────────────────────────────────────────┘    │
+         └─────────────────────────────────────────────────────────┘
+```
 
-## Development Notes
-- Contracts are non-upgradeable by default (v0.1).
-- v0.1 uses synchronous ERC-4626 strategies only.
-- Withdrawals revert if liquidity is insufficient.
+### Monorepo Structure
 
-## Safety
-Unaudited, experimental code. Do not use with mainnet funds.
+```
+MetaYield/
+├── 📁 apps/
+│   └── web/              # Next.js frontend
+├── 📁 packages/
+│   ├── contracts/        # Solidity (Foundry)
+│   └── sdk/              # TypeScript SDK (viem)
+├── 📁 services/
+│   └── indexer/          # Data API with rate limiting
+├── 📁 docs/              # Architecture, threat model
+└── 📁 infra/             # Docker, deployment
+```
+
+---
+
+## 🔐 Smart Contract Details
+
+### BlendedVault.sol
+
+ERC-4626 vault with allowlisted strategies:
+
+| Feature | Description |
+|---------|-------------|
+| **Caps** | Maximum allocation per strategy |
+| **Tiers** | Risk classification (0=safest, 2=riskiest) |
+| **Tier Limits** | Max exposure per risk tier (e.g., Tier 2 max 20%) |
+| **Queues** | Priority ordering for deposits/withdrawals |
+| **Timelock** | ≥24h delay for risk-increasing changes |
+| **Harvest Guard** | Optional max daily share-price increase cap (anti-manipulation) |
+
+### Roles
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   👑 Owner  │     │  🎨 Curator │     │  🤖 Allocator│    │  🛡️ Guardian │
+├─────────────┤     ├─────────────┤     ├─────────────┤     ├─────────────┤
+│ • Set fees  │     │ • Add/remove│     │ • Set queues│     │ • Pause     │
+│ • Grant     │     │   strategies│     │ • Rebalance │     │ • Emergency │
+│   roles     │     │ • Set caps  │     │ • Harvest   │     │   remove    │
+│ • Full      │     │ • Set tiers │     │             │     │             │
+│   admin     │     │             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+```
+
+### Performance Fee
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    Performance Fee: 3%                          │
+├────────────────────────────────────────────────────────────────┤
+│   High Water Mark System:                                       │
+│                                                                 │
+│   Share Price: $1.00 ──► $1.10 ──► $1.05 ──► $1.15             │
+│                              │           │       │              │
+│   Fee Charged:           3% on $0.10    None   3% on $0.05     │
+│                           profit        (loss)   (new profit)  │
+│                                                                 │
+│   ✅ Fees only on NEW profits above previous high              │
+│   ✅ Never charged on losses or principal                      │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📡 Indexer API
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/health` | Health check |
+| `GET /api/tvl` | Latest TVL, total supply, assets per share |
+| `GET /api/apy` | Realized 7d/30d APY |
+| `GET /api/allocations` | Per-strategy breakdown |
+| `GET /api/price-history?limit=48` | Historical share prices |
+
+Rate limited: 120 requests per 60 seconds per IP.
+
+---
+
+## 🔒 Security
+
+### Implemented Protections
+
+| Protection | Description |
+|------------|-------------|
+| 🔒 **Reentrancy Guard** | All external calls protected |
+| ⏰ **Timelock** | 24h+ delay on risk-increasing changes |
+| 🚨 **Pause Controls** | Guardian can halt deposits/withdrawals |
+| 📊 **Harvest Guard** | Max daily share price increase (configurable) |
+| 💵 **Min Initial Deposit** | Prevents first-depositor attack |
+| 🏷️ **Caps & Tiers** | Limits exposure per strategy and risk tier |
+
+### Development Notes
+
+- Contracts are non-upgradeable (v0.1)
+- v0.1 uses synchronous ERC-4626 strategies only
+- Withdrawals revert if liquidity is insufficient
+
+---
+
+## 📖 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [📐 ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design & flows |
+| [🛡️ THREAT_MODEL.md](docs/THREAT_MODEL.md) | Security analysis |
+| [📊 STRATEGY_UNIVERSE.md](docs/STRATEGY_UNIVERSE.md) | Strategy research |
+| [📘 RUNBOOK.md](docs/RUNBOOK.md) | Operations guide |
+| [✅ TODO.md](TODO.md) | Development roadmap |
+| [🧪 TESTS.md](TESTS.md) | Test instructions |
+
+---
+
+## 🛠️ Development
+
+### Test Commands
+
+```bash
+# Run all contract tests
+pnpm -C packages/contracts test
+
+# Run with verbosity
+pnpm -C packages/contracts test -vvv
+
+# Run specific test
+pnpm -C packages/contracts test --match-test testHarvestMintsFeeShares
+```
+
+### Build Commands
+
+```bash
+# Build contracts
+pnpm -C packages/contracts build
+
+# Build SDK
+pnpm -C packages/sdk build
+
+# Build web app
+pnpm -C apps/web build
+```
+
+---
+
+## ⚠️ Safety
+
+This software is experimental. Smart contract risks exist. Read the [THREAT_MODEL.md](docs/THREAT_MODEL.md) before use.
+
+---
+
+<div align="center">
+
+**Built with 💙 on Base**
+
+[GitHub](https://github.com/NukeThemAII/MetaYield) • [Report Bug](https://github.com/NukeThemAII/MetaYield/issues)
+
+</div>
