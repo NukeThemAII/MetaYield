@@ -15,9 +15,16 @@ corepack pnpm install
 git submodule update --init --recursive
 ```
 
-## 2) Create environment file for deployment
+## 2) Update environment file for deployment
 
-Create a root file named `.env.mainnet`:
+Template files are already created:
+- `.env.mainnet`
+- `services/indexer/.env`
+- `apps/web/.env.local`
+
+Edit them with your real values before deploying.
+
+Open `.env.mainnet` and replace the placeholders:
 
 ```bash
 cat <<'EOF' > .env.mainnet
@@ -125,7 +132,7 @@ cast send --rpc-url "$BASE_RPC_URL" --private-key "$DEPLOYER_KEY" \
 
 ## 6) Start the indexer (optional but recommended)
 
-Create `services/indexer/.env`:
+Open `services/indexer/.env` and replace the placeholders:
 
 ```bash
 cat <<'EOF' > services/indexer/.env
@@ -151,7 +158,7 @@ corepack pnpm -C services/indexer dev
 
 ## 7) Start the web app
 
-Create `apps/web/.env.local`:
+Open `apps/web/.env.local` and replace the placeholders:
 
 ```bash
 cat <<'EOF' > apps/web/.env.local
