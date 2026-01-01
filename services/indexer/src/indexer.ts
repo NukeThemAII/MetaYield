@@ -37,7 +37,8 @@ export class VaultIndexer {
     const startBlock = this.config.startBlock ?? latestBlock;
 
     await recordStartBlock(this.db, startBlock);
-    await recordLastProcessedBlock(this.db, startBlock);
+    // Record lastProcessedBlock as startBlock - 1 so syncEvents includes startBlock
+    await recordLastProcessedBlock(this.db, Math.max(startBlock - 1, 0));
   }
 
   start(): void {
@@ -146,9 +147,9 @@ export class VaultIndexer {
     });
 
     if (strategies.length > 0) {
-      const [configs, assets] = await Promise.all([
+      const [configResults, assetResults] = await Promise.all([
         this.client.multicall({
-          allowFailure: false,
+          allowFailure: true,
           contracts: strategies.map((strategy) => ({
             address: this.config.vaultAddress,
             abi: blendedVaultAbi,
@@ -157,7 +158,7 @@ export class VaultIndexer {
           })),
         }),
         this.client.multicall({
-          allowFailure: false,
+          allowFailure: true,
           contracts: strategies.map((strategy) => ({
             address: this.config.vaultAddress,
             abi: blendedVaultAbi,
@@ -167,21 +168,37 @@ export class VaultIndexer {
         }),
       ]);
 
-      const allocationSnapshots = strategies.map((strategy, index) => {
-        const config = configs[index];
-        return {
-          timestamp: blockTimestamp,
-          block_number: blockNumber,
-          strategy,
-          assets: assets[index].toString(),
-          tier: Number(config[2]),
-          cap_assets: config[3].toString(),
-          enabled: config[1] ? 1 : 0,
-          is_synchronous: config[4] ? 1 : 0,
-        };
-      });
+      // Filter out failed results to prevent one bricked strategy from breaking the snapshot
+      const allocationSnapshots = strategies
+        .map((strategy, index) => {
+          const configResult = configResults[index];
+          const assetResult = assetResults[index];
 
-      await insertAllocationSnapshots(this.db, allocationSnapshots);
+          // Skip if either call failed
+          if (configResult.status === "failure" || assetResult.status === "failure") {
+            console.warn(`Skipping strategy ${strategy}: multicall failed`);
+            return null;
+          }
+
+          const config = configResult.result;
+          const assets = assetResult.result;
+
+          return {
+            timestamp: blockTimestamp,
+            block_number: blockNumber,
+            strategy,
+            assets: assets.toString(),
+            tier: Number(config[2]),
+            cap_assets: config[3].toString(),
+            enabled: config[1] ? 1 : 0,
+            is_synchronous: config[4] ? 1 : 0,
+          };
+        })
+        .filter((snapshot): snapshot is NonNullable<typeof snapshot> => snapshot !== null);
+
+      if (allocationSnapshots.length > 0) {
+        await insertAllocationSnapshots(this.db, allocationSnapshots);
+      }
     }
 
     await recordLastSampleTimestamp(this.db, blockTimestamp);

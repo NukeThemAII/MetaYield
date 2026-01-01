@@ -158,11 +158,18 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
     }
 
     function maxWithdraw(address owner) public view override returns (uint256) {
-        return pausedWithdrawals ? 0 : super.maxWithdraw(owner);
+        if (pausedWithdrawals) return 0;
+        uint256 ownerAssets = super.maxWithdraw(owner);
+        uint256 liquidity = _availableLiquidity();
+        return ownerAssets < liquidity ? ownerAssets : liquidity;
     }
 
     function maxRedeem(address owner) public view override returns (uint256) {
-        return pausedWithdrawals ? 0 : super.maxRedeem(owner);
+        if (pausedWithdrawals) return 0;
+        uint256 ownerShares = super.maxRedeem(owner);
+        uint256 liquidity = _availableLiquidity();
+        uint256 liquidityShares = convertToShares(liquidity);
+        return ownerShares < liquidityShares ? ownerShares : liquidityShares;
     }
 
     function totalAssets() public view override returns (uint256) {
@@ -174,7 +181,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
             if (shares == 0) {
                 continue;
             }
-            total += IERC4626(strategy).previewRedeem(shares);
+            total += _safePreviewRedeem(strategy, shares);
         }
         return total;
     }
@@ -883,7 +890,7 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
             uint256 assets = 0;
             uint256 shares = IERC20(strategy).balanceOf(address(this));
             if (shares > 0) {
-                assets = IERC4626(strategy).previewRedeem(shares);
+                assets = _safePreviewRedeem(strategy, shares);
             }
             exposure[config.tier] += assets;
         }
@@ -899,6 +906,37 @@ contract BlendedVault is ERC4626, AccessControl, ReentrancyGuard {
         }
         // Mint shares to represent feeAssets without inflating assets.
         return (feeAssets * supply) / (total - feeAssets);
+    }
+
+    /// @notice Safely call previewRedeem on a strategy, returning 0 if it reverts
+    /// @dev Prevents a reverting/bricked strategy from DOS'ing the vault
+    function _safePreviewRedeem(address strategy, uint256 shares) internal view returns (uint256) {
+        try IERC4626(strategy).previewRedeem(shares) returns (uint256 assets) {
+            return assets;
+        } catch {
+            // Strategy is bricked/paused - treat as 0 value for accounting
+            return 0;
+        }
+    }
+
+    /// @notice Calculate total available liquidity for withdrawals
+    /// @dev Returns idle USDC + sum of strategy maxWithdraw amounts
+    function _availableLiquidity() internal view returns (uint256) {
+        uint256 liquidity = IERC20(asset()).balanceOf(address(this));
+        uint256 len = withdrawQueue.length;
+        for (uint256 i = 0; i < len; i++) {
+            address strategy = withdrawQueue[i];
+            StrategyConfig storage config = strategies[strategy];
+            if (!config.registered || !config.isSynchronous) {
+                continue;
+            }
+            try IERC4626(strategy).maxWithdraw(address(this)) returns (uint256 available) {
+                liquidity += available;
+            } catch {
+                // Strategy is bricked - skip it
+            }
+        }
+        return liquidity;
     }
 
     function _min(uint256 a, uint256 b) internal pure returns (uint256) {
